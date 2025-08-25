@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:todo_app/features/data/model/hive_task.dart';
 import 'package:todo_app/features/data/repository/task_repository.dart';
+import 'package:todo_app/features/theme/app_theme.dart';
 import 'package:todo_app/presentation/bloc/todo_bloc.dart';
 import 'package:todo_app/presentation/screens/home_screen.dart';
 
@@ -35,10 +36,13 @@ class MyApp extends StatelessWidget {
     final repo = TaskRepository();
     return MultiBlocProvider(
       providers: [
-        
         BlocProvider(create: (_) => TodoBloc(repo)..add(TodoLoadTasksEvent())),
       ],
-      child: MaterialApp(home: HomeScreen()),
+      child: MaterialApp(
+        home: HomeScreen(),
+        theme: CustomAppTheme.lightTheme,
+        darkTheme: CustomAppTheme.darkTheme,
+      ),
     );
   }
 }

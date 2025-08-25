@@ -38,3 +38,7 @@ class DeleteTaskEvent extends TodoEvent {
   @override
   List<Object> get props => [index];
 }
+
+//Delete All
+class DeletAllTasksEvent extends TodoEvent {}
+

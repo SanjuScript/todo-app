@@ -34,4 +34,9 @@ class TaskRepository implements TaskRepo {
   Future<void> deleteTask(int index) async {
     await taskBox.deleteAt(index);
   }
+
+  @override
+  Future<void> deleteAllTasks() async {
+    await taskBox.clear();
+  }
 }

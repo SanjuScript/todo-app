@@ -21,12 +21,16 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
 
     // Add task
     on<TodoAddTaskEvent>((event, emit) async {
-      try {
-        await taskRepository.addTask(event.taskModel);
-        final tasks = await taskRepository.getTasks();
-        emit(TodoLoaded(tasks));
-      } catch (e) {
-        emit(TodoError(e.toString()));
+      if (state is TodoLoaded) {
+        final currentTask = List<TaskModel>.from((state as TodoLoaded).tasks);
+        currentTask.add(event.taskModel);
+        emit(TodoLoaded(currentTask));
+
+        try {
+          await taskRepository.addTask(event.taskModel);
+        } catch (e) {
+          emit(TodoError(e.toString()));
+        }
       }
     });
 
@@ -47,6 +51,17 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
         await taskRepository.deleteTask(event.index);
         final tasks = await taskRepository.getTasks();
         emit(TodoLoaded(tasks));
+      } catch (e) {
+        emit(TodoError(e.toString()));
+      }
+    });
+
+    //Delete tasks
+    on<DeletAllTasksEvent>((event, emit) async {
+      emit(TodoLoading());
+      try {
+        await taskRepository.deleteAllTasks();
+        emit(TodoLoaded([]));
       } catch (e) {
         emit(TodoError(e.toString()));
       }
