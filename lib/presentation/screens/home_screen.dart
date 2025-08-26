@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_app/features/domain/entities/task_model.dart';
 import 'package:todo_app/features/helper/color_helper.dart';
 import 'package:todo_app/presentation/bloc/todo_bloc.dart';
+import 'package:todo_app/presentation/widgets/delete_confirm_dialogue.dart';
+import 'package:todo_app/presentation/widgets/draggable_sheet.dart';
+import 'package:todo_app/presentation/widgets/custom_drawer.dart';
 import 'package:todo_app/presentation/widgets/todo_tile.dart';
+
+final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final _key = GlobalKey<ScaffoldState>();
     final sz = MediaQuery.sizeOf(context);
     return Scaffold(
-      key: _key,
-      drawer: Drawer(),
+      key: scaffoldKey,
+      drawer: CustomDrawer(onItemTap: (item) {}),
       body: BlocBuilder<TodoBloc, TodoState>(
         builder: (context, state) {
           return CustomScrollView(
@@ -28,14 +31,25 @@ class HomeScreen extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () {
-                      context.read<TodoBloc>().add(DeletAllTasksEvent());
+                      showDialog(
+                        context: context,
+                        builder: (_) => DeleteConfirmationDialog(
+                          onConfirm: () {
+                            Navigator.pop(context);
+                            context.read<TodoBloc>().add(DeletAllTasksEvent());
+                          },
+                          onCancel: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      );
                     },
                   ),
                 ],
                 leading: IconButton(
                   icon: const Icon(Icons.menu),
                   onPressed: () {
-                    _key.currentState?.openDrawer();
+                    scaffoldKey.currentState?.openDrawer();
                   },
                 ),
                 flexibleSpace: FlexibleSpaceBar(
@@ -53,10 +67,7 @@ class HomeScreen extends StatelessWidget {
               else if (state is TodoLoaded && state.tasks.isEmpty)
                 const SliverFillRemaining(
                   child: Center(
-                    child: Text(
-                      "No tasks yet",
-                      style: TextStyle(fontSize: 18),
-                    ),
+                    child: Text("No tasks yet", style: TextStyle(fontSize: 18)),
                   ),
                 )
               else if (state is TodoLoaded)
@@ -77,22 +88,37 @@ class HomeScreen extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.teal,
-        onPressed: () {
-          context.read<TodoBloc>().add(
-            TodoAddTaskEvent(
-              TaskModel(
-                id: DateTime.now().toIso8601String(),
-                title: "New Task",
-                description: "This is a test",
-                createdAt: DateTime.now(),
-              ),
+
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SizedBox(
+          width: sz.width * .30,
+          child: FloatingActionButton.extended(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (_) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: ColorScheme.dark(
+                        surface: Colors.black87,
+                        onSurface: Colors.white,
+                      ),
+                    ),
+                    child: const AddTaskBottomSheet(),
+                  );
+                },
+              );
+            },
+            label: Text(
+              'Add +',
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-          );
-        },
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text("Add Task"),
+          ),
+        ),
       ),
     );
   }
