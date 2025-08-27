@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/features/helper/theme_options.dart';
 import 'package:todo_app/features/theme/bloc/theme_bloc.dart';
 
 class ThemeSelector extends StatefulWidget {
@@ -13,10 +14,10 @@ class _ThemeSelectorState extends State<ThemeSelector> {
   double dragPosition = 0;
   bool isDragging = false;
 
-  final items = const [
-    {"label": "Light", "mode": ThemeMode.light},
-    {"label": "Dark", "mode": ThemeMode.dark},
-    {"label": "System", "mode": ThemeMode.system},
+  final List<ThemeOption> items = const [
+    ThemeOption("Light", ThemeMode.light),
+    ThemeOption("Dark", ThemeMode.dark),
+    ThemeOption("System", ThemeMode.system),
   ];
 
   @override
@@ -27,7 +28,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
     return BlocBuilder<ThemeBloc, ThemeState>(
       builder: (context, state) {
         final selectedIndex = items.indexWhere(
-          (e) => e["mode"] == state.themeMode,
+          (e) => e.mode == state.themeMode,
         );
 
         if (!isDragging) {
@@ -47,9 +48,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
               final segmentWidth = constraints.maxWidth / items.length;
 
               return GestureDetector(
-                onHorizontalDragStart: (_) {
-                  setState(() => isDragging = true);
-                },
+                onHorizontalDragStart: (_) => setState(() => isDragging = true),
                 onHorizontalDragUpdate: (details) {
                   setState(() {
                     dragPosition += details.primaryDelta! / segmentWidth;
@@ -60,12 +59,10 @@ class _ThemeSelectorState extends State<ThemeSelector> {
                   setState(() => isDragging = false);
                   final index = dragPosition.round();
                   context.read<ThemeBloc>().add(
-                    ChangeThemeEvent(items[index]["mode"] as ThemeMode),
+                    ChangeThemeEvent(items[index].mode),
                   );
                 },
-                onTapUp: (_) {
-                  setState(() => isDragging = false);
-                },
+                onTapUp: (_) => setState(() => isDragging = false),
                 child: Stack(
                   children: [
                     AnimatedAlign(
@@ -97,6 +94,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
                     Row(
                       children: List.generate(items.length, (index) {
                         final isSelected = index == selectedIndex;
+                        final option = items[index];
                         return Expanded(
                           child: Center(
                             child: AnimatedDefaultTextStyle(
@@ -115,7 +113,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
                                           ? Colors.grey[400]
                                           : Colors.black87),
                               ),
-                              child: Text(items[index]["label"] as String),
+                              child: Text(option.label),
                             ),
                           ),
                         );

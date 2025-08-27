@@ -15,11 +15,14 @@ final class TodoLoading extends TodoState {}
 
 //Loaded state
 final class TodoLoaded extends TodoState {
-  final List<TaskModel> tasks;
-  const TodoLoaded(this.tasks);
+  final List<TaskModel> alltasks;
+  final List<TaskModel> upcomingTasks;
+  final List<TaskModel> completedTasks;
+
+  const TodoLoaded(this.alltasks, this.upcomingTasks, this.completedTasks);
 
   @override
-  List<Object> get props => [tasks];
+  List<Object> get props => [alltasks, upcomingTasks, completedTasks];
 }
 
 //Todo error

@@ -6,7 +6,7 @@ class ThemeRepository implements ThemeRepo {
 
   @override
   int loadTheme() {
-    return settingsBox.get('themeMode',defaultValue: 0);
+    return settingsBox.get('themeMode', defaultValue: 0);
   }
 
   @override

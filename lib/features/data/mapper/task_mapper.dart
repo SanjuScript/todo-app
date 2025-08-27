@@ -10,6 +10,7 @@ class TaskMapper {
       isCompleted: hiveTask.isCompleted,
       createdAt: hiveTask.createdAt,
       dueDate: hiveTask.dueDate,
+      completedAt: hiveTask.completedAt,
     );
   }
 
@@ -21,6 +22,7 @@ class TaskMapper {
       isCompleted: task.isCompleted,
       createdAt: task.createdAt,
       dueDate: task.dueDate,
+      completedAt: task.completedAt,
     );
   }
 }

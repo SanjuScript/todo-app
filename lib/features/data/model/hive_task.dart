@@ -21,6 +21,9 @@ class HiveTask extends HiveObject {
   @HiveField(5)
   final DateTime? dueDate;
 
+  @HiveField(6)
+  final DateTime? completedAt;
+
   HiveTask({
     required this.id,
     required this.title,
@@ -28,5 +31,6 @@ class HiveTask extends HiveObject {
     required this.isCompleted,
     required this.createdAt,
     this.dueDate,
+    this.completedAt,
   });
 }

@@ -25,7 +25,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.warning_amber_rounded,
-                color: theme.colorScheme.error, size: 48),
+                color: theme.colorScheme.primary, size: 48),
             const SizedBox(height: 16),
             Text(
               "Delete All Tasks?",
@@ -47,7 +47,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.error,
+                      backgroundColor: theme.colorScheme.inversePrimary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

@@ -12,11 +12,14 @@ class ThemeMapper {
     }
   }
 
-   static int mapThemeToIndex(ThemeMode themeMode) {
+  static int mapThemeToIndex(ThemeMode themeMode) {
     switch (themeMode) {
-      case ThemeMode.light: return 0;
-      case ThemeMode.dark: return 1;
-      case ThemeMode.system: return 2;
+      case ThemeMode.light:
+        return 0;
+      case ThemeMode.dark:
+        return 1;
+      case ThemeMode.system:
+        return 2;
     }
   }
 }

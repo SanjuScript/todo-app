@@ -30,6 +30,15 @@ class TodoUpdateTaskEvent extends TodoEvent {
   List<Object> get props => [task, index];
 }
 
+//Mark as Completed
+class TodoMarkCompletedEvent extends TodoEvent {
+  final String id;
+  const TodoMarkCompletedEvent(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
+
 //Delete Task Event
 class DeleteTaskEvent extends TodoEvent {
   final int index;
@@ -41,4 +50,3 @@ class DeleteTaskEvent extends TodoEvent {
 
 //Delete All
 class DeletAllTasksEvent extends TodoEvent {}
-

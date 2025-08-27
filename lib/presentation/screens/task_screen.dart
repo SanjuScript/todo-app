@@ -36,22 +36,19 @@ class TaskScreen extends StatelessWidget {
           if (state is TodoLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is TodoLoaded) {
-            if (state.tasks.isEmpty) {
+            if (state.alltasks.isEmpty) {
               return const Center(
                 child: Text(
                   "No tasks yet 🎉",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
                 ),
               );
             }
             return ListView.builder(
               padding: const EdgeInsets.all(12),
-              itemCount: state.tasks.length,
+              itemCount: state.alltasks.length,
               itemBuilder: (context, index) {
-                final task = state.tasks[index];
+                final task = state.alltasks[index];
                 final bgColor = colors[index % colors.length];
 
                 return Card(
@@ -79,8 +76,10 @@ class TaskScreen extends StatelessWidget {
                       ),
                     ),
                     trailing: IconButton(
-                      icon: const Icon(Icons.check_circle_outline,
-                          color: Colors.white),
+                      icon: const Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.white,
+                      ),
                       onPressed: () {
                         // mark task complete
                       },
@@ -98,15 +97,15 @@ class TaskScreen extends StatelessWidget {
         backgroundColor: Colors.teal,
         onPressed: () {
           context.read<TodoBloc>().add(
-                TodoAddTaskEvent(
-                  TaskModel(
-                    id: DateTime.now().toIso8601String(),
-                    title: "New Task",
-                    description: "This is a test",
-                    createdAt: DateTime.now(),
-                  ),
-                ),
-              );
+            TodoAddTaskEvent(
+              TaskModel(
+                id: DateTime.now().toIso8601String(),
+                title: "New Task",
+                description: "This is a test",
+                createdAt: DateTime.now(),
+              ),
+            ),
+          );
         },
         icon: const Icon(Icons.add),
         label: const Text("Add Task"),

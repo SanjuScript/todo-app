@@ -5,8 +5,9 @@ class TaskModel extends Equatable {
   final String id;
   final String title;
   final String? description;
-  final DateTime createdAt;
   final bool isCompleted;
+  final DateTime createdAt;
+  final DateTime? completedAt;
   final DateTime? dueDate;
 
   const TaskModel({
@@ -15,6 +16,7 @@ class TaskModel extends Equatable {
     required this.description,
     required this.createdAt,
     this.isCompleted = false,
+    this.completedAt,
     this.dueDate,
   });
   @override
@@ -23,6 +25,7 @@ class TaskModel extends Equatable {
     title,
     description,
     isCompleted,
+    completedAt,
     createdAt,
     dueDate,
   ];
@@ -32,6 +35,7 @@ class TaskModel extends Equatable {
     String? title,
     String? description,
     DateTime? createdAt,
+    DateTime? completedAt,
     bool? isCompleted,
     DateTime? dueDate,
   }) {
@@ -42,6 +46,7 @@ class TaskModel extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       isCompleted: isCompleted ?? this.isCompleted,
       dueDate: dueDate ?? this.dueDate,
+      completedAt: completedAt ?? this.completedAt,
     );
   }
 }

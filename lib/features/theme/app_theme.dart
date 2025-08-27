@@ -54,19 +54,19 @@ class CustomAppTheme {
       ),
       headlineLarge: PerfectTypogaphy.regular.copyWith(
         fontSize: 22,
-        color: Colors.white,
+        color: "0D0D0D".toColor(),
       ),
       headlineMedium: PerfectTypogaphy.regular.copyWith(
         fontSize: 20,
-        color: Colors.white,
+        color: "0D0D0D".toColor(),
       ),
       headlineSmall: PerfectTypogaphy.regular.copyWith(
         fontSize: 18,
-        color: Colors.white,
+        color: "0D0D0D".toColor(),
       ),
       labelMedium: PerfectTypogaphy.bold.copyWith(
         fontSize: 16,
-        color: Colors.white,
+        color: "0D0D0D".toColor(),
       ),
       labelSmall: PerfectTypogaphy.bold.copyWith(
         fontSize: 14,
@@ -78,7 +78,7 @@ class CustomAppTheme {
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30),
-       side: const BorderSide(color: Color(0xFFE0E0E0), width: 2),
+        side: const BorderSide(color: Color(0xFFE0E0E0), width: 2),
       ),
       elevation: 6,
     ),
@@ -292,7 +292,7 @@ class CustomAppTheme {
       ),
       labelMedium: PerfectTypogaphy.bold.copyWith(
         fontSize: 16,
-        color: Colors.white70,
+        color: Colors.white,
       ),
       labelSmall: PerfectTypogaphy.bold.copyWith(
         fontSize: 14,
