@@ -215,13 +215,12 @@ class _TodoCalendarState extends State<TodoCalendar> {
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
                                 children: [
-                                   Icon(Icons.event_note),
+                                  Icon(Icons.event_note),
                                   SizedBox(width: 5),
                                   Text(
                                     "Pending",
-                                    style: theme.textTheme.titleMedium!.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: theme.textTheme.titleMedium!
+                                        .copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
