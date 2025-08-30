@@ -1,6 +1,8 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/features/domain/entities/task_model.dart';
+import 'package:todo_app/features/notifications/cubit/notification_cubit.dart';
 import 'package:todo_app/presentation/bloc/todo_bloc.dart';
 import 'package:todo_app/presentation/widgets/premuim_textfield.dart';
 
@@ -91,15 +93,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                         builder: (context, child) {
                           return Theme(
                             data: Theme.of(context).copyWith(
-                              
                               textTheme: Theme.of(context).textTheme.copyWith(
-
-                                bodyLarge: TextStyle(
-                                  color: Colors.black,
-                                ), // typed date text
-                                bodyMedium: TextStyle(
-                                  color: Colors.black,
-                                ), // fallback
+                                bodyLarge: TextStyle(color: Colors.black),
+                                bodyMedium: TextStyle(color: Colors.black),
                               ),
                             ),
                             child: child!,
@@ -124,6 +120,8 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () {
+                      final taskId = DateTime.now().toIso8601String();
+                      log("🆕 Creating new task with id=$taskId");
                       final title = titleController.text.trim();
                       final desc = descController.text.trim();
                       if (title.isEmpty) {
@@ -134,17 +132,17 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                         );
                         return;
                       }
-                      context.read<TodoBloc>().add(
-                        TodoAddTaskEvent(
-                          TaskModel(
-                            id: DateTime.now().toIso8601String(),
-                            title: title,
-                            description: desc.isEmpty ? "No description" : desc,
-                            createdAt: DateTime.now(),
-                            dueDate: selectedDate,
-                          ),
-                        ),
+                      final task = TaskModel(
+                        id: taskId,
+                        title: title,
+                        description: desc.isEmpty ? "No description" : desc,
+                        createdAt: DateTime.now(),
+                        dueDate: selectedDate,
                       );
+                      context.read<TodoBloc>().add(TodoAddTaskEvent(task));
+                      if (task.dueDate != null) {
+                        context.read<NotificationCubit>().scheduleTask(task);
+                      }
                       Navigator.pop(context);
                     },
                     child: const Text("Save Task"),

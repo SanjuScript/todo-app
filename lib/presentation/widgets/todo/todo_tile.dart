@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/features/data/repository/task_repository.dart';
 import 'package:todo_app/features/domain/entities/task_model.dart';
 import 'package:todo_app/features/helper/extensions/date_formating.dart';
+import 'package:todo_app/features/notifications/cubit/notification_cubit.dart';
 import 'package:todo_app/presentation/bloc/todo_bloc.dart';
 
 class TodoTile extends StatelessWidget {
@@ -75,7 +77,6 @@ class TodoTile extends StatelessWidget {
                           task.description!,
                           style: theme.textTheme.bodySmall?.copyWith(
                             overflow: TextOverflow.ellipsis,
-                            color: theme.colorScheme.onSurface.withOpacity(0.7),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -85,9 +86,7 @@ class TodoTile extends StatelessWidget {
                         task.dueDate != null
                             ? "Due: ${task.dueDate!.toFormattedString()}"
                             : "Created: ${task.createdAt.toFormattedString()}",
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.5),
-                        ),
+                        style: theme.textTheme.labelSmall?.copyWith(),
                       ),
                       if (showCompletedDate && task.completedAt != null)
                         Text(
@@ -108,55 +107,88 @@ class TodoTile extends StatelessWidget {
                       ScaleTransition(scale: anim, child: child),
                   child: GestureDetector(
                     key: ValueKey(task.isCompleted),
-                    onTap: () {
+                    onTap: () async {
                       context.read<TodoBloc>().add(
                         TodoMarkCompletedEvent(task.id),
                       );
+                      if (!task.isCompleted) {
+                        context.read<NotificationCubit>().cancelTask(task.id);
+                      }
+
+                      final state = context.read<TodoBloc>().state;
+                      if (state is TodoLoaded) {
+                        final completedCount = state.alltasks
+                            .where((t) => t.isCompleted)
+                            .length;
+
+                        await context
+                            .read<NotificationCubit>()
+                            .checkAchievements(completedCount);
+                      }
                     },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: task.isCompleted
-                            ? LinearGradient(
-                                colors: [
-                                  Color.lerp(
-                                    bgColor,
-                                    Colors.red.shade100,
-                                    0.35,
-                                  )!,
-                                  bgColor,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              )
-                            : LinearGradient(
-                                colors: [
-                                  Color.lerp(
-                                    bgColor,
-                                    Colors.red.shade100,
-                                    0.35,
-                                  )!,
-                                  bgColor,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color.lerp(bgColor, Colors.white24, 0.35)!,
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 400),
+                      transitionBuilder: (child, anim) => ScaleTransition(
+                        scale: CurvedAnimation(
+                          parent: anim,
+                          curve: Curves.easeOutBack,
+                        ),
+                        child: RotationTransition(
+                          turns: Tween<double>(
+                            begin: 0.75,
+                            end: 1,
+                          ).animate(anim),
+                          child: child,
+                        ),
                       ),
-                      child: Icon(
-                        task.isCompleted
-                            ? Icons.check
-                            : Icons.radio_button_unchecked,
-                        size: 24,
+                      child: Container(
+                        key: ValueKey(task.isCompleted),
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: task.isCompleted
+                              ? LinearGradient(
+                                  colors: [
+                                    Color.lerp(
+                                      bgColor,
+                                      Colors.red.shade100,
+                                      0.35,
+                                    )!,
+                                    bgColor,
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                              : LinearGradient(
+                                  colors: [
+                                    Color.lerp(
+                                      bgColor,
+                                      Colors.red.shade100,
+                                      0.35,
+                                    )!,
+                                    bgColor,
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 6,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          task.isCompleted
+                              ? Icons.check_rounded
+                              : Icons.circle_outlined,
+                          size: 26,
+                          color: task.isCompleted
+                              ? Colors.white
+                              : theme.colorScheme.onSurface.withOpacity(0.5),
+                        ),
                       ),
                     ),
                   ),
@@ -188,3 +220,51 @@ class TodoTile extends StatelessWidget {
     );
   }
 }
+//  AnimatedContainer(
+//                       duration: const Duration(milliseconds: 300),
+//                       width: 40,
+//                       height: 40,
+//                       decoration: BoxDecoration(
+//                         shape: BoxShape.circle,
+                        // gradient: task.isCompleted
+                        //     ? LinearGradient(
+                        //         colors: [
+                        //           Color.lerp(
+                        //             bgColor,
+                        //             Colors.red.shade100,
+                        //             0.35,
+                        //           )!,
+                        //           bgColor,
+                        //         ],
+                        //         begin: Alignment.topLeft,
+                        //         end: Alignment.bottomRight,
+                        //       )
+                        //     : LinearGradient(
+                        //         colors: [
+                        //           Color.lerp(
+                        //             bgColor,
+                        //             Colors.red.shade100,
+                        //             0.35,
+                        //           )!,
+                        //           bgColor,
+                        //         ],
+                        //         begin: Alignment.topLeft,
+                        //         end: Alignment.bottomRight,
+                        //       ),
+//                         boxShadow: [
+//                           BoxShadow(
+//                             color: Color.lerp(bgColor, Colors.white24, 0.35)!,
+//                             blurRadius: 8,
+//                             offset: const Offset(0, 4),
+//                           ),
+//                         ],
+//                       ),
+//                       child: Icon(
+//                         task.isCompleted
+//                             ? Icons.check
+//                             : Icons.radio_button_unchecked,
+//                         size: 24,
+//                       ),
+//                     ),
+//                   ),
+//                 ),

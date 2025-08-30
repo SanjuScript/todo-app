@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:hive/hive.dart';
 import 'package:todo_app/features/data/mapper/task_mapper.dart';
 import 'package:todo_app/features/data/model/hive_task.dart';
@@ -13,7 +15,11 @@ class TaskRepository implements TaskRepo {
   @override
   Future<void> addTask(TaskModel task) async {
     final hiveTask = TaskMapper.toHive(task);
+    log("Looking for taskId=${hiveTask.id} in Hive: " 
+    "all=${taskBox.values.map((t) => t.id).toList()}");
+
     await taskBox.add(hiveTask);
+    
   }
 
   //Get All Tasks
@@ -33,6 +39,26 @@ class TaskRepository implements TaskRepo {
   @override
   Future<void> deleteTask(int index) async {
     await taskBox.deleteAt(index);
+  }
+
+  @override
+  Future<void> markTaskCompletedById(String taskId) async {
+    final index = taskBox.values.toList().indexWhere(
+      (task) => task.id.toString() == taskId,
+    );
+
+    if (index != -1) {
+    final hiveTask = taskBox.getAt(index);
+    if (hiveTask != null) {
+      final updatedTask = TaskMapper.fromHive(hiveTask);
+      final tasks = updatedTask.copyWith(isCompleted: true);
+      final ftasks = TaskMapper.toHive(tasks);
+      await taskBox.putAt(index, ftasks);
+    }
+  } else {
+    log("❌ Task with id=$taskId not found in Hive. Available: "
+        "${taskBox.values.map((t) => t.id).toList()}");
+  }
   }
 
   //Delete All Tasks

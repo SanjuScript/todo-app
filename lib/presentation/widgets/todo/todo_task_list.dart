@@ -26,11 +26,18 @@ class TaskList extends StatelessWidget {
 
     return ListView.builder(
       padding: const EdgeInsets.only(top: 12),
-      itemCount: tasks.length,
+      itemCount: tasks.length + 1,
       itemBuilder: (context, index) {
+        if (index == tasks.length) {
+          return SizedBox(height: 60);
+        }
         final task = tasks[index];
         final bgColor = ColorHelper.colors[index % ColorHelper.colors.length];
-        return TodoTile(task: task, bgColor: bgColor,showCompletedDate:showCompletedDate);
+        return TodoTile(
+          task: task,
+          bgColor: bgColor,
+          showCompletedDate: showCompletedDate,
+        );
       },
     );
   }

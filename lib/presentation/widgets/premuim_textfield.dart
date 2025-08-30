@@ -38,18 +38,16 @@ class PremiumTextField extends StatelessWidget {
         maxLines: maxLines,
         keyboardType: keyboardType,
 
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
           fontSize: 16,
           fontWeight: FontWeight.w500,
         ),
         decoration: InputDecoration(
-          
           labelText: label,
           labelStyle: TextStyle(
             color: theme.colorScheme.primary.withOpacity(0.8),
             fontWeight: FontWeight.w500,
           ),
-        
         ),
       ),
     );

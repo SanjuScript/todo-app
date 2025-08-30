@@ -30,11 +30,11 @@ class CustomAppTheme {
       ),
       bodyMedium: PerfectTypogaphy.regular.copyWith(
         fontSize: 14,
-        color: Colors.white,
+        color: Colors.black,
       ),
       bodySmall: PerfectTypogaphy.regular.copyWith(
         fontSize: 12,
-        color: Colors.grey,
+        color: Colors.white70,
       ),
       labelLarge: PerfectTypogaphy.bold.copyWith(
         fontSize: 16,
@@ -46,7 +46,7 @@ class CustomAppTheme {
       ),
       titleMedium: PerfectTypogaphy.bold.copyWith(
         fontSize: 20,
-        color: "0D0D0D".toColor(),
+        color: Colors.white,
       ),
       titleSmall: PerfectTypogaphy.bold.copyWith(
         fontSize: 18,
@@ -70,7 +70,7 @@ class CustomAppTheme {
       ),
       labelSmall: PerfectTypogaphy.bold.copyWith(
         fontSize: 14,
-        color: Colors.black,
+        color: Colors.white70,
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -260,7 +260,7 @@ class CustomAppTheme {
       ),
       bodySmall: PerfectTypogaphy.regular.copyWith(
         fontSize: 12,
-        color: Colors.grey,
+        color: Colors.white70,
       ),
       labelLarge: PerfectTypogaphy.bold.copyWith(
         fontSize: 16,

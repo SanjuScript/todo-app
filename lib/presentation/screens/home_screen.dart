@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/presentation/bloc/todo_bloc.dart';
+import 'package:todo_app/presentation/screens/home_screen_changes/cubit/visibility_cubit.dart';
+import 'package:todo_app/presentation/screens/todo_calender.dart';
 import 'package:todo_app/presentation/widgets/delete_confirm_dialogue.dart';
 import 'package:todo_app/presentation/widgets/draggable_sheet.dart';
 import 'package:todo_app/presentation/widgets/custom_drawer.dart';
@@ -22,7 +24,18 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this, initialIndex: 1);
+    _addListner();
+  }
+
+  void _addListner() {
+    _tabController.addListener(() {
+      if (_tabController.index == 0) {
+        context.read<BottomBarCubit>().hide();
+      } else {
+        context.read<BottomBarCubit>().show();
+      }
+    });
   }
 
   @override
@@ -55,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       key: scaffoldKey,
       drawer: CustomDrawer(onItemTap: _onDrawerItemTap),
-
+      extendBody: true,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverAppBar(
@@ -99,6 +112,9 @@ class _HomeScreenState extends State<HomeScreen>
             ),
             bottom: TabBar(
               controller: _tabController,
+
+              isScrollable: true,
+              tabAlignment: TabAlignment.center,
               indicator: UnderlineTabIndicator(
                 borderSide: BorderSide(width: 4, color: Colors.transparent),
                 insets: EdgeInsets.symmetric(horizontal: 16),
@@ -109,6 +125,7 @@ class _HomeScreenState extends State<HomeScreen>
               unselectedLabelStyle: Theme.of(context).textTheme.headlineSmall,
               unselectedLabelColor: Colors.grey,
               tabs: [
+                Tab(text: "Calendar"),
                 Tab(text: "All"),
                 Tab(text: "Upcoming"),
                 Tab(text: "Completed"),
@@ -125,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen>
               return TabBarView(
                 controller: _tabController,
                 children: [
+                  TodoCalendar(),
                   TaskList(tasks: state.alltasks),
                   TaskList(tasks: state.upcomingTasks),
                   TaskList(
@@ -152,36 +170,44 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ),
 
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.miniCenterDocked,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SizedBox(
-          width: sz.width * .30,
-          child: FloatingActionButton.extended(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                builder: (_) {
-                  return Theme(
-                    data: Theme.of(context).copyWith(
-                      colorScheme: const ColorScheme.dark(
-                        surface: Colors.black87,
-                        onSurface: Colors.white,
+      bottomNavigationBar: BlocBuilder<BottomBarCubit, bool>(
+        builder: (context, isVisible) {
+          return AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: isVisible ? 1.0 : 0.0,
+            child: isVisible
+                ? Container(
+                    height: sz.height * .12,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.transparent, Colors.black],
+                        stops: const [0.0, 1.5],
                       ),
                     ),
-                    child: const AddTaskBottomSheet(),
-                  );
-                },
-              );
-            },
-            label: Text(
-              'Add +',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-          ),
-        ),
+                    child: Center(
+                      child: TextButton(
+                        style: Theme.of(context).elevatedButtonTheme.style,
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (_) => const AddTaskBottomSheet(),
+                          );
+                        },
+                        child: Text(
+                          'Add new todo +',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleMedium?.copyWith(),
+                        ),
+                      ),
+                    ),
+                  )
+                : null,
+          );
+        },
       ),
     );
   }
