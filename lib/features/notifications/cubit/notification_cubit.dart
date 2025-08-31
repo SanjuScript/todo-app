@@ -1,9 +1,7 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/features/data/repository/notify_repo/notification_repo.dart';
 import 'package:todo_app/features/domain/entities/task_model.dart';
 import 'package:todo_app/features/helper/id_getter.dart';
-part 'notification_state.dart';
 
 class NotificationCubit extends Cubit<void> {
   final NotificationRepository notificationRepository;

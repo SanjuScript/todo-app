@@ -1,11 +1,13 @@
 import 'dart:developer';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:todo_app/features/data/repository/notify_repo/notification_repo.dart';
 import 'package:todo_app/features/data/repository/task_repository.dart';
-import 'package:todo_app/features/helper/id_getter.dart';
+import 'package:todo_app/main.dart';
+import 'package:todo_app/presentation/bloc/todo_bloc.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -25,20 +27,43 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
     await flutterLocalNotificationsPlugin.initialize(
       settings,
-      onDidReceiveNotificationResponse: (response) async {
-        if (response.actionId == 'MARK_DONE') {
-          final taskId = response.payload;
-          log(taskId.toString());
-          if (taskId != null) {
-            await taskRepository.markTaskCompletedById(taskId);
-          }
-          flutterLocalNotificationsPlugin.cancel(response.id ?? 0);
-        } else if (response.actionId == 'DISMISS') {
-          flutterLocalNotificationsPlugin.cancel(response.id ?? 0);
-        }
-      },
+      onDidReceiveNotificationResponse: _onNotificationResponse,
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
     _initialized = true;
+  }
+
+  Future<void> _onNotificationResponse(NotificationResponse response) async {
+    log(
+      "Notification tapped: id=${response.id}, action=${response.actionId}, payload=${response.payload}",
+    );
+
+    if (response.actionId == 'MARK_DONE' && response.payload != null) {
+      final context = MyApp.navigatorKey.currentContext;
+      if (context != null) {
+        context.read<TodoBloc>().add(TodoMarkCompletedEvent(response.payload!));
+      }
+    }
+
+    flutterLocalNotificationsPlugin.cancel(response.id ?? 0);
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> notificationTapBackground(
+    NotificationResponse response,
+  ) async {
+    log(
+      "Background tap received: id=${response.id}, action=${response.actionId}, payload=${response.payload}",
+    );
+
+    final taskRepo = TaskRepository();
+    if (response.actionId == 'MARK_DONE' && response.payload != null) {
+      await taskRepo.markTaskCompletedByIdBackground(response.payload!);
+      log("Task marked completed in background: ${response.payload}");
+    }
+
+    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    await flutterLocalNotificationsPlugin.cancel(response.id ?? 0);
   }
 
   @override

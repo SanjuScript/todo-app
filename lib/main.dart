@@ -15,6 +15,7 @@ import 'package:todo_app/presentation/bloc/todo_bloc.dart';
 import 'package:todo_app/presentation/screens/home_screen.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:todo_app/presentation/screens/home_screen_changes/cubit/highlight_cubit.dart';
 import 'package:todo_app/presentation/screens/home_screen_changes/cubit/visibility_cubit.dart';
 
 void main() async {
@@ -24,7 +25,9 @@ void main() async {
   await Hive.initFlutter();
 
   //Registering Hive
-  Hive.registerAdapter(HiveTaskAdapter());
+  if (!Hive.isAdapterRegistered(HiveTaskAdapter().typeId)) {
+    Hive.registerAdapter(HiveTaskAdapter());
+  }
 
   //open Hive box
   await Hive.openBox<HiveTask>('tasksBox');
@@ -49,12 +52,11 @@ void main() async {
       providers: [
         BlocProvider(create: (_) => TodoBloc(repo)..add(TodoLoadTasksEvent())),
         BlocProvider(create: (_) => ThemeBloc(themeRepo)),
-        BlocProvider<NotificationCubit>(
+        BlocProvider(
           create: (context) => NotificationCubit(notificationRepo)..init(),
         ),
-        BlocProvider<BottomBarCubit>(
-          create: (context) => BottomBarCubit(),
-        ),
+        BlocProvider(create: (context) => BottomBarCubit()),
+        BlocProvider(create: (context) => HighlightCubit()),
       ],
       child: const MyApp(),
     ),
@@ -68,6 +70,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   const MyApp({super.key});
 
   @override
@@ -90,6 +94,7 @@ class MyApp extends StatelessWidget {
           duration: const Duration(milliseconds: 400),
           curve: Curves.easeInOut,
           child: MaterialApp(
+            navigatorKey: navigatorKey,
             debugShowCheckedModeBanner: false,
             home: HomeScreen(),
             theme: CustomAppTheme.lightTheme,

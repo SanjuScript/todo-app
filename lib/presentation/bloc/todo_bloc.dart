@@ -9,6 +9,16 @@ part 'todo_state.dart';
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
   final TaskRepository taskRepository;
   TodoBloc(this.taskRepository) : super(TodoInitial()) {
+    // Reload tasks whenever Hive changes
+    taskRepository.watchTasks().listen((tasks) {
+      add(TodoTasksSyncedEvent(tasks));
+    });
+
+    //Handling event
+    on<TodoTasksSyncedEvent>((event, emit) {
+      emit(mapTasksToState(event.tasks));
+    });
+
     //Load tasks
     on<TodoLoadTasksEvent>((event, emit) async {
       emit(TodoLoading());

@@ -10,12 +10,14 @@ class TodoTile extends StatelessWidget {
   final TaskModel task;
   final Color bgColor;
   final bool showCompletedDate;
+  final bool buttonFuctionable;
 
   const TodoTile({
     super.key,
     required this.task,
     required this.bgColor,
     required this.showCompletedDate,
+    this.buttonFuctionable = true,
   });
 
   bool get isOverdue {
@@ -91,9 +93,7 @@ class TodoTile extends StatelessWidget {
                       if (showCompletedDate && task.completedAt != null)
                         Text(
                           "Completed on: ${task.completedAt!.toFormattedString()}",
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.5),
-                          ),
+                          style: theme.textTheme.labelSmall?.copyWith(),
                         ),
                     ],
                   ),
@@ -105,9 +105,13 @@ class TodoTile extends StatelessWidget {
                   duration: const Duration(milliseconds: 300),
                   transitionBuilder: (child, anim) =>
                       ScaleTransition(scale: anim, child: child),
-                  child: GestureDetector(
+                  child: InkWell(
+                    overlayColor: WidgetStateProperty.all(Colors.transparent),
                     key: ValueKey(task.isCompleted),
                     onTap: () async {
+                      if (!buttonFuctionable) {
+                        return;
+                      }
                       context.read<TodoBloc>().add(
                         TodoMarkCompletedEvent(task.id),
                       );
@@ -220,51 +224,3 @@ class TodoTile extends StatelessWidget {
     );
   }
 }
-//  AnimatedContainer(
-//                       duration: const Duration(milliseconds: 300),
-//                       width: 40,
-//                       height: 40,
-//                       decoration: BoxDecoration(
-//                         shape: BoxShape.circle,
-                        // gradient: task.isCompleted
-                        //     ? LinearGradient(
-                        //         colors: [
-                        //           Color.lerp(
-                        //             bgColor,
-                        //             Colors.red.shade100,
-                        //             0.35,
-                        //           )!,
-                        //           bgColor,
-                        //         ],
-                        //         begin: Alignment.topLeft,
-                        //         end: Alignment.bottomRight,
-                        //       )
-                        //     : LinearGradient(
-                        //         colors: [
-                        //           Color.lerp(
-                        //             bgColor,
-                        //             Colors.red.shade100,
-                        //             0.35,
-                        //           )!,
-                        //           bgColor,
-                        //         ],
-                        //         begin: Alignment.topLeft,
-                        //         end: Alignment.bottomRight,
-                        //       ),
-//                         boxShadow: [
-//                           BoxShadow(
-//                             color: Color.lerp(bgColor, Colors.white24, 0.35)!,
-//                             blurRadius: 8,
-//                             offset: const Offset(0, 4),
-//                           ),
-//                         ],
-//                       ),
-//                       child: Icon(
-//                         task.isCompleted
-//                             ? Icons.check
-//                             : Icons.radio_button_unchecked,
-//                         size: 24,
-//                       ),
-//                     ),
-//                   ),
-//                 ),

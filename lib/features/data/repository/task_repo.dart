@@ -7,4 +7,7 @@ abstract class TaskRepo {
   Future<void> deleteTask(int index);
   Future<void> markTaskCompletedById(String taskId);
   Future<void> deleteAllTasks();
+  Future<void> markTaskCompletedByIdBackground(String taskId);
+  List<TaskModel> getTasksSync();
+  Stream<List<TaskModel>> watchTasks();
 }

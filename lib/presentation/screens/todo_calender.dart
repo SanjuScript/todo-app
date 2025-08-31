@@ -7,13 +7,15 @@ import 'package:todo_app/presentation/bloc/todo_bloc.dart';
 import 'package:todo_app/presentation/widgets/todo/todo_tile.dart';
 
 class TodoCalendar extends StatefulWidget {
-  const TodoCalendar({super.key});
+  final ValueChanged<String>? onTap;
+  const TodoCalendar({super.key, required this.onTap});
 
   @override
   State<TodoCalendar> createState() => _TodoCalendarState();
 }
 
-class _TodoCalendarState extends State<TodoCalendar> {
+class _TodoCalendarState extends State<TodoCalendar>
+    with AutomaticKeepAliveClientMixin {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
@@ -36,7 +38,11 @@ class _TodoCalendarState extends State<TodoCalendar> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -219,8 +225,10 @@ class _TodoCalendarState extends State<TodoCalendar> {
                                   SizedBox(width: 5),
                                   Text(
                                     "Pending",
-                                    style: theme.textTheme.titleMedium!
-                                        .copyWith(fontWeight: FontWeight.bold),
+                                    style: theme.textTheme.titleLarge!.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 22,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -273,10 +281,17 @@ class _TodoCalendarState extends State<TodoCalendar> {
                                   final task = entry.value;
                                   final bgColor = ColorHelper
                                       .colors[idx % ColorHelper.colors.length];
-                                  return TodoTile(
-                                    task: task,
-                                    bgColor: bgColor,
-                                    showCompletedDate: true,
+                                  return InkWell(
+                                    overlayColor: WidgetStateProperty.all(
+                                      Colors.transparent,
+                                    ),
+                                    onTap: () => widget.onTap?.call(task.id),
+                                    child: TodoTile(
+                                      task: task,
+                                      bgColor: bgColor,
+                                      showCompletedDate: true,
+                                      buttonFuctionable: false,
+                                    ),
                                   );
                                 }),
                           ],

@@ -30,6 +30,12 @@ class TodoUpdateTaskEvent extends TodoEvent {
   List<Object> get props => [task, index];
 }
 
+//Event for sync handling
+class TodoTasksSyncedEvent extends TodoEvent {
+  final List<TaskModel> tasks;
+  const TodoTasksSyncedEvent(this.tasks);
+}
+
 //Mark as Completed
 class TodoMarkCompletedEvent extends TodoEvent {
   final String id;
